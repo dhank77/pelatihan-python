@@ -15,6 +15,7 @@ export function ThemeToggle() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
+    window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
   }, [theme]);
 
   return (

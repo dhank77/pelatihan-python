@@ -36,21 +36,17 @@ const DAY1: Item[] = [
 
 const DAY2: Item[] = [
   {
-    time: "08.00-09.00",
-    title: "Materi 5: Manipulasi Data dengan NumPy dan Pandas",
-    presenter: "Muh. Iqram Bahring",
-  },
-  {
-    time: "09.00-10.30",
-    title: "Materi 6: Exploratory Data Analysis & Visualisasi",
+    time: "08.00-09.30",
+    title: "Materi 5: NumPy, Pandas, Matplotlib & EDA",
     presenter: "Muhammad Ramadhan",
   },
   {
-    time: "10.30-12.00",
-    title: "Materi 7: Machine Learning, Training & Evaluasi Model",
+    time: "09.30-11.00",
+    title: "Materi 6: Machine Learning, Training & Evaluasi Model",
     presenter: "Andi Achyar",
   },
-  { time: "12.00-13.30", title: "Istirahat siang" },
+  { time: "11.00-12.00", title: "Materi 7: Tugas per orang" },
+  { time: "12.00-13.30", title: "Ishoma" },
   { time: "13.30-15.30", title: "Materi 8: Evaluasi & thesis sharing" },
   { time: "15.30-16.00", title: "Sholat Ashar" },
   { time: "16.00-17.00", title: "Materi 8 (lanjutan): Evaluasi & thesis sharing" },
@@ -122,7 +118,7 @@ export function Schedule() {
 
         <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
           <DayColumn label="Hari pertama" date="Sabtu, 15 Agustus 2026" items={DAY1} delay={0} />
-          <DayColumn label="Hari kedua" date="Minggu, 16 Agustus 2026" items={DAY2} delay={0.1} />
+          <DayColumn label="Hari kedua" date="Ahad, 16 Agustus 2026" items={DAY2} delay={0.1} />
         </div>
       </Container>
     </section>

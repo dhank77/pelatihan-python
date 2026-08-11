@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
-import { Sigma, Stack, ChartLineUp, PresentationChart, Brain, Leaf } from "@phosphor-icons/react";
+import { Sigma, Stack, ChartLineUp, Brain, NotePencil, GraduationCap, Leaf } from "@phosphor-icons/react";
 import { Container } from "./Container";
 
 export function Curriculum() {
@@ -63,9 +63,9 @@ export function Curriculum() {
             className="rounded-2xl border border-ink-700 bg-ink-900 p-6"
           >
             <ChartLineUp size={26} weight="bold" className="text-blue-450" />
-            <h3 className="mt-4 text-lg font-semibold text-ink-50">NumPy & Pandas</h3>
+            <h3 className="mt-4 text-lg font-semibold text-ink-50">NumPy, Pandas & EDA</h3>
             <p className="mt-2 text-sm leading-relaxed text-ink-300">
-              Manipulasi data dengan dua pustaka inti data science di Python. Materi 5.
+              Manipulasi data, visualisasi dengan Matplotlib, sampai exploratory data analysis. Materi 5.
             </p>
           </motion.div>
 
@@ -73,16 +73,28 @@ export function Curriculum() {
             {...reveal(0.18)}
             className="rounded-2xl border border-ink-700 bg-ink-900 p-6"
           >
-            <PresentationChart size={26} weight="bold" className="text-blue-450" />
-            <h3 className="mt-4 text-lg font-semibold text-ink-50">EDA & Visualisasi</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink-300">
-              Exploratory data analysis dengan Matplotlib dan Seaborn. Materi 6.
+            <Brain size={26} weight="bold" className="text-blue-450" />
+            <h3 className="mt-4 text-lg font-semibold text-ink-50">Machine Learning</h3>
+            <p className="mt-2 flex items-center gap-1.5 text-sm leading-relaxed text-ink-300">
+              <Leaf size={14} weight="bold" className="shrink-0 text-blue-450" />
+              Studi kasus deteksi penyakit pada daun tanaman. Materi 6.
             </p>
           </motion.div>
 
           <motion.div
             {...reveal(0.24)}
-            className="relative overflow-hidden rounded-2xl border border-ink-700 bg-ink-900 p-6 sm:col-span-2 lg:col-span-4"
+            className="rounded-2xl border border-ink-700 bg-ink-900 p-6 sm:col-span-2"
+          >
+            <NotePencil size={26} weight="bold" className="text-py-500" />
+            <h3 className="mt-4 text-lg font-semibold text-ink-50">Tugas Perorangan</h3>
+            <p className="mt-2 text-sm leading-relaxed text-ink-300">
+              Praktik mandiri untuk mengasah materi yang sudah dipelajari. Materi 7.
+            </p>
+          </motion.div>
+
+          <motion.div
+            {...reveal(0.3)}
+            className="relative overflow-hidden rounded-2xl border border-ink-700 bg-ink-900 p-6 sm:col-span-2"
           >
             <div
               aria-hidden
@@ -93,20 +105,14 @@ export function Curriculum() {
                 backgroundSize: "18px 18px",
               }}
             />
-            <div className="relative flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <Brain size={26} weight="bold" className="text-blue-450" />
-                <h3 className="mt-4 text-lg font-semibold text-ink-50">
-                  Machine Learning & Studi Akhir
-                </h3>
-                <p className="mt-2 max-w-[56ch] text-sm leading-relaxed text-ink-300">
-                  Melatih dan mengevaluasi model machine learning lewat studi kasus deteksi penyakit pada daun tanaman, ditutup dengan sesi evaluasi dan berbagi hasil. Materi 7 dan 8.
-                </p>
-              </div>
-              <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-blue-450">
-                <Leaf size={16} weight="bold" />
-                Studi kasus nyata
-              </span>
+            <div className="relative">
+              <GraduationCap size={26} weight="bold" className="text-blue-450" />
+              <h3 className="mt-4 text-lg font-semibold text-ink-50">
+                Evaluasi & Thesis Sharing
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-300">
+                Penutup pelatihan: evaluasi menyeluruh dan berbagi rencana riset tesis. Materi 8.
+              </p>
             </div>
           </motion.div>
         </div>
