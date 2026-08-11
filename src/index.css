@@ -1,0 +1,123 @@
+@import "tailwindcss";
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/600.css";
+@import "@fontsource/geist-sans/700.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/geist-mono/600.css";
+
+@theme {
+  --font-sans: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Base tokens = dark mode. Overridden for light mode below. */
+  --color-ink-950: #0a0e14;
+  --color-ink-900: #0f1520;
+  --color-ink-800: #151d2b;
+  --color-ink-700: #1d2635;
+  --color-ink-600: #2a3548;
+  --color-ink-500: #445168;
+  --color-ink-400: #7382a0;
+  --color-ink-300: #a3aec4;
+  --color-ink-200: #ccd3e0;
+  --color-ink-100: #e9ecf2;
+  --color-ink-50: #f5f6f9;
+
+  --color-py-400: #ffe27a;
+  --color-py-500: #f6ce3e;
+  --color-py-600: #dba916;
+  --color-py-700: #a97f0d;
+
+  --color-blue-450: #4b8bd6;
+
+  /* Fixed near-black used for text/icons drawn on bright accent surfaces.
+     Does not flip with theme, since bg-py-500 stays bright in both modes. */
+  --color-oncontrast: #0a0e14;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+/* Light mode via system preference, unless explicitly overridden to dark. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --color-ink-950: #f8fafc;
+    --color-ink-900: #f1f5f9;
+    --color-ink-800: #e7ebf1;
+    --color-ink-700: #d6dce4;
+    --color-ink-600: #b9c1cd;
+    --color-ink-500: #6b7688;
+    --color-ink-400: #4b5567;
+    --color-ink-300: #333c4d;
+    --color-ink-200: #202634;
+    --color-ink-100: #12161f;
+    --color-ink-50: #05070a;
+  }
+}
+
+/* Light mode via explicit toggle, regardless of system preference. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink-950: #f8fafc;
+  --color-ink-900: #f1f5f9;
+  --color-ink-800: #e7ebf1;
+  --color-ink-700: #d6dce4;
+  --color-ink-600: #b9c1cd;
+  --color-ink-500: #6b7688;
+  --color-ink-400: #4b5567;
+  --color-ink-300: #333c4d;
+  --color-ink-200: #202634;
+  --color-ink-100: #12161f;
+  --color-ink-50: #05070a;
+}
+
+/* Dark mode via explicit toggle, regardless of system preference. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-ink-950: #0a0e14;
+  --color-ink-900: #0f1520;
+  --color-ink-800: #151d2b;
+  --color-ink-700: #1d2635;
+  --color-ink-600: #2a3548;
+  --color-ink-500: #445168;
+  --color-ink-400: #7382a0;
+  --color-ink-300: #a3aec4;
+  --color-ink-200: #ccd3e0;
+  --color-ink-100: #e9ecf2;
+  --color-ink-50: #f5f6f9;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: var(--color-ink-100);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background-color: var(--color-py-500);
+  color: var(--color-oncontrast);
+}
