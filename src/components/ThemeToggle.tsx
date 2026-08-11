@@ -4,6 +4,12 @@ import { Moon, Sun } from "@phosphor-icons/react";
 type Theme = "light" | "dark";
 
 function getInitialTheme(): Theme {
+  // index.html runs an inline script before paint that already applies the
+  // saved theme (or system default) to <html data-theme>, on every route.
+  // Read that back instead of recomputing, so this stays in sync with it.
+  const applied = document.documentElement.getAttribute("data-theme");
+  if (applied === "light" || applied === "dark") return applied;
+
   const stored = localStorage.getItem("theme");
   if (stored === "light" || stored === "dark") return stored;
   return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
