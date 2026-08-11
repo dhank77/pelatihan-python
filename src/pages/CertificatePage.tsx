@@ -114,6 +114,12 @@ export function CertificatePage() {
               NIM <span className="font-mono text-ink-200">{nim}</span> belum terdaftar. Pastikan
               tautan yang Anda buka benar, atau hubungi panitia.
             </p>
+            <Link
+              to="/cert"
+              className="mt-6 rounded-full border border-ink-700 px-5 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:border-ink-500"
+            >
+              Coba NIM lain
+            </Link>
           </div>
         )}
 

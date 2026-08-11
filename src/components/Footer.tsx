@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { TerminalWindow, EnvelopeSimple, WhatsappLogo } from "@phosphor-icons/react";
 import { Container } from "./Container";
 
@@ -37,6 +38,11 @@ export function Footer() {
                   </a>
                 </li>
               ))}
+              <li>
+                <Link to="/cert" className="text-sm text-ink-400 hover:text-ink-100">
+                  Cek Sertifikat
+                </Link>
+              </li>
             </ul>
           </div>
 
