@@ -1,6 +1,12 @@
 import { useState, useRef, type FormEvent } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "motion/react";
-import { CircleNotch, CheckCircle, WarningCircle, Sparkle } from "@phosphor-icons/react";
+import {
+  CircleNotch,
+  CheckCircle,
+  WarningCircle,
+  Sparkle,
+  WhatsappLogo,
+} from "@phosphor-icons/react";
 import { Container } from "./Container";
 import { supabase, isSupabaseConfigured } from "../lib/supabase";
 
@@ -13,6 +19,8 @@ type FormState = {
 };
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
+
+const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/Esrk1c4j0UO4x6m3HcnyUH";
 
 const EMPTY_FORM: FormState = {
   nama: "",
@@ -255,9 +263,23 @@ export function Registration() {
 
                 <h2 className="mt-4 text-xl font-semibold text-ink-50">Pendaftaran diterima</h2>
                 <p className="mt-2 max-w-[36ch] text-sm text-ink-300">
-                  Terima kasih, {form.nama.split(" ")[0]}. Informasi lokasi dan tautan grup akan
+                  Terima kasih, {form.nama.split(" ")[0]}. Informasi lokasi pelatihan akan
                   dikirim ke {form.email} sebelum tanggal pelatihan.
                 </p>
+
+                <a
+                  href={WHATSAPP_GROUP_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-semibold text-[#0b1a0f] transition-transform hover:scale-[1.02]"
+                >
+                  <WhatsappLogo size={20} weight="fill" />
+                  Gabung Grup WhatsApp
+                </a>
+                <p className="mt-2 text-xs text-ink-500">
+                  Wajib bergabung untuk info terbaru seputar pelatihan.
+                </p>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -265,7 +287,7 @@ export function Registration() {
                     setErrors({});
                     setStatus("idle");
                   }}
-                  className="mt-6 rounded-full border border-ink-700 px-5 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:border-ink-500"
+                  className="mt-4 rounded-full border border-ink-700 px-5 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:border-ink-500"
                 >
                   Daftarkan orang lain
                 </button>
