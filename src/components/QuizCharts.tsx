@@ -1,16 +1,11 @@
 import { CheckCircle, XCircle, UsersThree } from "@phosphor-icons/react";
+import type { Question } from "../lib/quizQuestions";
 
 export type QuizStats = {
   total: number;
   avg_score: number;
   score_distribution: { score: number; count: number }[];
   option_counts: { question_index: number; option_index: number; count: number }[];
-};
-
-type Question = {
-  question: string;
-  options: string[];
-  answer: number;
 };
 
 /** Overall summary: total submissions, average score, and the score histogram. */
@@ -21,7 +16,7 @@ export function OverallScoreChart({
 }: {
   stats: QuizStats;
   maxScore: number;
-  userScore: number;
+  userScore?: number;
 }) {
   const buckets = Array.from({ length: maxScore + 1 }, (_, score) => {
     const found = stats.score_distribution.find((s) => s.score === score);
@@ -36,7 +31,7 @@ export function OverallScoreChart({
         <h3 className="text-sm font-semibold text-ink-50">Statistik seluruh peserta</h3>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className={`mt-4 grid grid-cols-2 gap-3 ${userScore !== undefined ? "sm:grid-cols-3" : ""}`}>
         <div className="rounded-xl border border-ink-800 bg-ink-950/50 px-4 py-3">
           <p className="text-xs text-ink-400">Total peserta</p>
           <p className="mt-1 text-xl font-bold text-ink-50">{stats.total}</p>
@@ -48,19 +43,21 @@ export function OverallScoreChart({
             <span className="text-sm font-normal text-ink-500">/{maxScore}</span>
           </p>
         </div>
-        <div className="rounded-xl border border-py-500/40 bg-py-500/5 px-4 py-3">
-          <p className="text-xs text-ink-400">Skor kamu</p>
-          <p className="mt-1 text-xl font-bold text-py-500">
-            {userScore}
-            <span className="text-sm font-normal text-ink-500">/{maxScore}</span>
-          </p>
-        </div>
+        {userScore !== undefined && (
+          <div className="rounded-xl border border-py-500/40 bg-py-500/5 px-4 py-3">
+            <p className="text-xs text-ink-400">Skor kamu</p>
+            <p className="mt-1 text-xl font-bold text-py-500">
+              {userScore}
+              <span className="text-sm font-normal text-ink-500">/{maxScore}</span>
+            </p>
+          </div>
+        )}
       </div>
 
       <p className="mt-5 text-xs font-medium text-ink-400">Distribusi skor semua peserta</p>
       <div className="mt-6 flex items-end gap-1.5" style={{ height: 96 }}>
         {buckets.map((b) => {
-          const isUser = b.score === userScore;
+          const isUser = userScore !== undefined && b.score === userScore;
           const heightPct = (b.count / maxCount) * 100;
           return (
             <div key={b.score} className="relative flex h-full flex-1 items-end justify-center">
@@ -103,7 +100,7 @@ export function PerQuestionChart({
 }: {
   questions: Question[];
   stats: QuizStats;
-  userAnswers: (number | null)[];
+  userAnswers?: (number | null)[];
 }) {
   return (
     <div className="mt-5 space-y-4">
@@ -140,7 +137,7 @@ export function PerQuestionChart({
                 const count = counts[optIndex];
                 const pct = totalForQuestion > 0 ? (count / totalForQuestion) * 100 : 0;
                 const isCorrect = optIndex === q.answer;
-                const isUserPick = userAnswers[qIndex] === optIndex;
+                const isUserPick = userAnswers?.[qIndex] === optIndex;
                 const barColor = isCorrect
                   ? "bg-py-500"
                   : isUserPick
