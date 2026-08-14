@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle,
+  CircleNotch,
+  LockSimple,
+  WarningCircle,
   XCircle,
   TerminalWindow,
-  ArrowCounterClockwise,
 } from "@phosphor-icons/react";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
+import { OverallScoreChart, PerQuestionChart, type QuizStats } from "../components/QuizCharts";
 
 type Question = {
   question: string;
@@ -68,17 +72,68 @@ const QUESTIONS: Question[] = [
   },
 ];
 
+const STORAGE_KEY = "pymti-quiz-v1";
+
+type StoredResult = {
+  answers: (number | null)[];
+  score: number;
+  submittedAt: string;
+};
+
+function loadStoredResult(): StoredResult | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.answers) || typeof parsed.score !== "number") return null;
+    return parsed as StoredResult;
+  } catch {
+    return null;
+  }
+}
+
 export function QuizPage() {
+  const [storedResult] = useState<StoredResult | null>(() => loadStoredResult());
   const [answers, setAnswers] = useState<(number | null)[]>(
-    Array(QUESTIONS.length).fill(null),
+    () => storedResult?.answers ?? Array(QUESTIONS.length).fill(null),
   );
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(() => storedResult !== null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [stats, setStats] = useState<QuizStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [statsError, setStatsError] = useState(false);
 
   const allAnswered = answers.every((a) => a !== null);
   const score = answers.reduce(
     (acc: number, a, i) => acc + (a === QUESTIONS[i].answer ? 1 : 0),
     0,
   );
+
+  useEffect(() => {
+    if (!submitted) return;
+    if (!supabase) return;
+
+    let cancelled = false;
+    setStatsLoading(true);
+    setStatsError(false);
+
+    supabase
+      .rpc("get_quiz_stats")
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data) {
+          setStatsError(true);
+        } else {
+          setStats(data as QuizStats);
+        }
+        setStatsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [submitted]);
 
   function selectOption(qIndex: number, optIndex: number) {
     if (submitted) return;
@@ -87,15 +142,34 @@ export function QuizPage() {
     setAnswers(next);
   }
 
-  function handleSubmit() {
-    if (!allAnswered) return;
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  async function handleSubmit() {
+    if (!allAnswered || submitting || submitted) return;
 
-  function handleRetake() {
-    setAnswers(Array(QUESTIONS.length).fill(null));
-    setSubmitted(false);
+    setSubmitting(true);
+    setSubmitError("");
+
+    if (supabase) {
+      const { error } = await supabase.from("quiz_results").insert({
+        answers,
+        score,
+        total: QUESTIONS.length,
+      });
+      if (error) {
+        setSubmitting(false);
+        setSubmitError("Jawaban gagal disimpan. Coba lagi dalam beberapa saat.");
+        return;
+      }
+    }
+
+    const record: StoredResult = {
+      answers,
+      score,
+      submittedAt: new Date().toISOString(),
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+
+    setSubmitting(false);
+    setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -133,14 +207,10 @@ export function QuizPage() {
               {score}
               <span className="text-lg text-ink-500">/{QUESTIONS.length}</span>
             </p>
-            <button
-              type="button"
-              onClick={handleRetake}
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-ink-700 px-5 py-2.5 text-sm font-medium text-ink-200 transition-colors hover:border-ink-500"
-            >
-              <ArrowCounterClockwise size={16} weight="bold" />
-              Ulangi quiz
-            </button>
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-ink-500">
+              <LockSimple size={13} weight="bold" />
+              Quiz ini hanya bisa diisi sekali di perangkat ini.
+            </p>
           </div>
         )}
 
@@ -192,15 +262,66 @@ export function QuizPage() {
         </div>
 
         {!submitted && (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!allAnswered}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-py-500 px-6 py-3.5 text-sm font-semibold text-oncontrast transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {allAnswered ? "Lihat Hasil" : `Jawab semua soal (${answers.filter((a) => a !== null).length}/${QUESTIONS.length})`}
-            <ArrowRight size={16} weight="bold" />
-          </button>
+          <>
+            {submitError && (
+              <div className="mt-5 flex items-start gap-2 rounded-lg border border-rose-400/40 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+                <WarningCircle size={18} weight="bold" className="mt-0.5 shrink-0" />
+                {submitError}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!allAnswered || submitting}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-py-500 px-6 py-3.5 text-sm font-semibold text-oncontrast transition-transform hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting ? (
+                <>
+                  <CircleNotch size={16} weight="bold" className="animate-spin" />
+                  Menyimpan...
+                </>
+              ) : allAnswered ? (
+                <>
+                  Lihat Hasil
+                  <ArrowRight size={16} weight="bold" />
+                </>
+              ) : (
+                `Jawab semua soal (${answers.filter((a) => a !== null).length}/${QUESTIONS.length})`
+              )}
+            </button>
+            {!isSupabaseConfigured && (
+              <p className="mt-3 text-center text-xs text-ink-500">
+                Mode pratinjau: koneksi database belum dikonfigurasi.
+              </p>
+            )}
+          </>
+        )}
+
+        {submitted && (
+          <div className="mt-8">
+            {!isSupabaseConfigured && (
+              <p className="rounded-2xl border border-ink-800 bg-ink-900/60 p-6 text-center text-sm text-ink-400">
+                Statistik peserta belum tersedia: koneksi database belum dikonfigurasi.
+              </p>
+            )}
+            {isSupabaseConfigured && statsLoading && (
+              <div className="flex items-center justify-center gap-2 rounded-2xl border border-ink-800 bg-ink-900/60 p-6 text-sm text-ink-400">
+                <CircleNotch size={16} weight="bold" className="animate-spin" />
+                Memuat statistik peserta...
+              </div>
+            )}
+            {isSupabaseConfigured && !statsLoading && statsError && (
+              <p className="rounded-2xl border border-ink-800 bg-ink-900/60 p-6 text-center text-sm text-ink-400">
+                Gagal memuat statistik peserta. Coba muat ulang halaman.
+              </p>
+            )}
+            {isSupabaseConfigured && !statsLoading && !statsError && stats && (
+              <>
+                <OverallScoreChart stats={stats} maxScore={QUESTIONS.length} userScore={score} />
+                <PerQuestionChart questions={QUESTIONS} stats={stats} userAnswers={answers} />
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>
